@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Venster-Memory</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header>
+    <h1 data-i18n="popupTitle"></h1>
+    <a class="link" href="#" id="options" data-i18n="popupOptions"></a>
+  </header>
+
+  <section class="notice" id="access" hidden>
+    <h2 data-i18n="accessTitle"></h2>
+    <p data-i18n="accessBody"></p>
+    <button id="access-help" data-i18n="accessButton"></button>
+  </section>
+
+  <section class="notice undo" id="undo-box" hidden>
+    <p data-i18n="popupUndoHint"></p>
+    <button id="undo" data-i18n="popupUndo"></button>
+  </section>
+
+  <p class="status" id="status"></p>
+  <p class="empty" id="empty" data-i18n="popupEmpty" hidden></p>
+  <ul id="list"></ul>
+
+  <script src="popup.js"></script>
+</body>
+</html>
