@@ -11,6 +11,24 @@ apple.com/mac-mini                                                           app
 apple.com/mac-studio                                                         apple.com/mac-studio
 ```
 
+## Downloaden
+
+Pak de nieuwste zip van de [Releases-pagina](https://github.com/pepurp-prive/Venster-Memory/releases).
+
+1. Uitpakken.
+2. **Installeer Venster-Memory.command** met de **rechtermuisknop → Open** starten. De eerste keer
+   met de rechtermuisknop, anders houdt Gatekeeper het tegen omdat het bestand van internet komt.
+3. In Safari aanzetten — de stappen staan in **LEES MIJ.md** in de zip.
+
+Twee dingen om vooraf te weten:
+
+- Safari vraagt **"Sta niet-ondertekende extensies toe"** (Instellingen → Ontwikkelaar) en zet die
+  toestemming na elke herstart weer uit. Dat komt doordat deze versie niet via de App Store gaat.
+  Het is weg te krijgen met een Apple Developer-account: sinds Safari 18.4 accepteert Safari
+  extensies die met een Developer ID zijn ondertekend en genotariseerd.
+- Zet de toegang van de extensie op **"Toestaan op elke website"**. Zonder dat geeft Safari geen
+  enkele tabblad-URL door en onthoudt de extensie niets.
+
 ## Waar dit wel en niet over gaat
 
 Safari bewaart **tabbladgroepen** zelf al. Wat het vergeet zijn de **losse tabbladen** van een
@@ -63,9 +81,18 @@ extensie niet van een leeg venster te onderscheiden — dan staat bovenin de pop
 **"Hersteld — ongedaan maken"**. Eén klik en het venster is weer leeg, met de tabbladen terug in
 het geheugen.
 
-## Installeren
+## Zelf bouwen
 
-Je hebt macOS met Xcode nodig; een Safari-extensie is altijd een app.
+Alleen nodig als je aan de code wilt sleutelen — anders volstaat de download hierboven. Je hebt
+macOS met Xcode nodig; een Safari-extensie is altijd een app.
+
+Het hele pakket in één commando, precies zoals GitHub het bouwt:
+
+```sh
+./scripts/make-app-package.sh     # -> dist/Venster-Memory-1.0.zip
+```
+
+Of alleen het Xcode-project, om in Xcode te kunnen debuggen:
 
 ```sh
 ./scripts/build-xcode-project.sh
