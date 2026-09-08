@@ -30,6 +30,13 @@ fi
 
 VERSION="$(python3 -c "import json;print(json.load(open('$ROOT/extension/manifest.json'))['version'])")"
 PACKAGE="Venster-Memory-$VERSION"
+# The folder inside the zip carries no version number: macOS treats the ".0" in
+# "Venster-Memory-1.0" as a file extension and shows it as "Venster-Memory-1",
+# which reads like a stray copy.
+STAGE_NAME="Venster-Memory"
+# A copy of the plain extension, for Develop > "Add Temporary Extension...",
+# which wants a folder with manifest.json at its root.
+LOOSE_NAME="Extensie-map (tijdelijk laden)"
 
 echo "==> Generating the Xcode project"
 rm -rf "$BUILD_DIR" "$DIST_DIR"
@@ -80,15 +87,21 @@ codesign --verify --deep --strict --verbose=2 "$APP"
 codesign --display --verbose=2 "$APP" 2>&1 | sed 's/^/    /' 
 
 echo "==> Assembling $PACKAGE"
-STAGE="$DIST_DIR/$PACKAGE"
+STAGE="$DIST_DIR/$STAGE_NAME"
 mkdir -p "$STAGE"
 ditto "$APP" "$STAGE/$APP_NAME.app"
 ditto "$ROOT/packaging/Installeer Venster-Memory.command" "$STAGE/Installeer Venster-Memory.command"
 ditto "$ROOT/packaging/LEES MIJ.md" "$STAGE/LEES MIJ.md"
 chmod +x "$STAGE/Installeer Venster-Memory.command"
 
+# Safari's "Add Temporary Extension..." asks for a folder with manifest.json at
+# its root. Pointing it at the package folder gets you "Extensie niet
+# ondersteund", so ship the plain extension alongside the app.
+ditto "$ROOT/extension" "$STAGE/$LOOSE_NAME"
+test -f "$STAGE/$LOOSE_NAME/manifest.json"
+
 # ditto, not zip: a plain zip mangles the symlinks inside an .app bundle.
-( cd "$DIST_DIR" && ditto -c -k --keepParent "$PACKAGE" "$PACKAGE.zip" )
+( cd "$DIST_DIR" && ditto -c -k --keepParent "$STAGE_NAME" "$PACKAGE.zip" )
 
 echo
 echo "Done: $DIST_DIR/$PACKAGE.zip"

@@ -40,7 +40,8 @@ jobs:
       - name: Check the bundle really contains the extension
         run: |
           set -euo pipefail
-          APP="dist/Venster-Memory-${{ steps.pkg.outputs.version }}/Venster Memory.app"
+          STAGE="dist/Venster-Memory"
+          APP="$STAGE/Venster Memory.app"
           APPEX="$(find "$APP/Contents/PlugIns" -maxdepth 1 -name '*.appex' -print -quit)"
           test -n "$APPEX" || { echo "no .appex inside the app"; exit 1; }
           test -f "$APPEX/Contents/Resources/manifest.json" || { echo "no manifest.json in the appex"; exit 1; }
@@ -52,6 +53,14 @@ jobs:
           echo "architecturen: $(lipo -archs "$APP/Contents/MacOS/Venster Memory")"
           echo "minimaal macOS: $(/usr/libexec/PlistBuddy -c 'Print :LSMinimumSystemVersion' "$APP/Contents/Info.plist")"
           lipo -archs "$APP/Contents/MacOS/Venster Memory" | grep -q x86_64 || { echo "not universal"; exit 1; }
+
+          # The folder Safari's "Add Temporary Extension..." expects must exist
+          # and must have its manifest at the root, or picking it just gives
+          # "Extensie niet ondersteund".
+          LOOSE="$STAGE/Extensie-map (tijdelijk laden)"
+          test -f "$LOOSE/manifest.json" || { echo "no loose extension folder"; exit 1; }
+          test -f "$LOOSE/background.js" || { echo "loose folder is incomplete"; exit 1; }
+
           echo "OK: $(basename "$APPEX")"
 
       - uses: actions/upload-artifact@v4

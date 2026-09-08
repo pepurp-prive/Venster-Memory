@@ -3,39 +3,45 @@
 Sluit je een Safari-venster met het **rode bolletje**, dan zijn de tabbladen weg zodra je Safari
 weer opent. Venster-Memory onthoudt ze en zet ze terug — per profiel.
 
-## 1. App installeren
+---
 
-1. Klik met de **rechtermuisknop** op **Installeer Venster-Memory.command** en kies **Open**.
-   (De eerste keer met rechtermuisknop, anders houdt Gatekeeper het bestand tegen omdat het van
-   internet komt. Klik in het venster dat verschijnt op **Open**.)
-2. De app wordt in `/Applications` geplaatst en geopend.
-3. Een bestaande versie gaat eerst naar de prullenmand.
+## Begin hier
 
-## 2. Safari aanzetten
+**Dubbelklik op `Installeer Venster-Memory.command`.** Dat is alles.
 
-De Safari-extensie zit al in **Venster Memory.app**.
+Komt de zip uit een download, dan de eerste keer met **rechtermuisknop → Open**, anders houdt
+Gatekeeper het tegen. Klik in het venster dat verschijnt nog een keer op **Open**.
 
-1. Open Safari en kies **Safari > Instellingen > Geavanceerd**.
-2. Zet **Toon functies voor webontwikkelaars** aan.
-3. Open het tabblad **Ontwikkelaar** en zet **Sta niet-ondertekende extensies toe** aan.
-4. Open het tabblad **Extensies** en vink **Venster-Memory** aan.
-5. Zet de toegang van de extensie op **Toestaan op elke website**.
+> **Geef deze map niet aan Safari.** Kies je hem bij *Ontwikkelaar → Voeg tijdelijke extensie toe*,
+> dan krijg je **"Extensie niet ondersteund"**. Klopt ook: in deze map zit een app, geen losse
+> extensie. Wil je die route toch, zie *Alternatief* onderaan.
 
-Stap 3 is nodig omdat deze versie niet via de App Store wordt verspreid. Safari zet die
-toestemming na het afsluiten opnieuw uit; vink hem dan opnieuw aan.
+Wat het installatiescript doet: de app naar `/Applications` zetten, een oude versie naar de
+prullenmand, de extensie bij Safari aanmelden en de app openen.
 
-Stap 5 is niet optioneel. Anders dan Chrome en Firefox geeft Safari een extensie **geen enkele
-tabblad-URL** tot je dat toestaat. Zonder die toestemming ziet Venster-Memory letterlijk niets en
-onthoudt het niets — de popup zegt het als het misgaat.
+## Daarna: aanzetten in Safari
 
-## 3. Per profiel herhalen
+De extensie zit ín de app. Zichtbaar maken kost vier stappen:
+
+1. **Safari → Instellingen → Geavanceerd** → zet **Toon functies voor webontwikkelaars** aan.
+2. Tabblad **Ontwikkelaar** → zet **Sta niet-ondertekende extensies toe** aan.
+3. Tabblad **Extensies** → vink **Venster-Memory** aan.
+4. Zet de toegang van de extensie op **Toestaan op elke website**.
+
+**Stap 2** is nodig omdat deze versie niet via de App Store wordt verspreid. Safari zet die
+toestemming na het afsluiten weer uit; vink hem dan opnieuw aan.
+
+**Stap 4 is niet optioneel.** Anders dan Chrome en Firefox geeft Safari een extensie *geen enkele
+tabblad-URL* tot je het toestaat. Zonder die toestemming ziet Venster-Memory letterlijk niets en
+onthoudt het niets. De popup van de extensie waarschuwt je als dit nog niet goed staat.
+
+## En per profiel herhalen
 
 Safari geeft elk profiel zijn eigen kopie van een extensie, met een eigen geheugen. Dat is precies
 de bedoeling: *Persoonlijk* onthoudt alleen Persoonlijke vensters. Maar het betekent ook dat je
-stap 4 en 5 moet herhalen in **elk profiel** waar je de extensie wilt — in een nieuw profiel staan
-extensies standaard uit.
+**stap 3 en 4 in elk profiel** moet herhalen — in een nieuw profiel staan extensies standaard uit.
 
-## Controle
+## Werkt het?
 
 1. Open drie tabbladen. De popup van de extensie zegt hoeveel er wordt bijgehouden.
 2. Sluit het venster met het **rode bolletje**.
@@ -51,6 +57,27 @@ Verder:
 - Ging er iets mis, bijvoorbeeld omdat je een lege tabbladgroep opende? Bovenin de popup staat
   **"Hersteld — ongedaan maken"**. Eén klik en het venster is weer leeg, met de tabbladen terug in
   het geheugen.
+
+## Als Venster-Memory niet in de lijst staat
+
+- Heb je het installatiescript echt gedraaid? Staat `Venster Memory.app` in `/Applications`?
+- Safari helemaal afsluiten (⌘Q) en opnieuw openen.
+- Staat **Sta niet-ondertekende extensies toe** nog aan? Die gaat bij elke herstart uit.
+- Kijk in het juiste profiel: extensies staan per profiel apart aan.
+
+---
+
+## Alternatief: tijdelijk laden, zonder installeren
+
+Alleen om snel te kijken of het werkt. **Ontwikkelaar → Voeg tijdelijke extensie toe** en kies de
+map **`Extensie-map (tijdelijk laden)`** hiernaast — díe map heeft een `manifest.json` in de wortel,
+dus die accepteert Safari wel.
+
+Maar: een tijdelijke extensie wordt **uitgeladen zodra je Safari afsluit**. En juist het afsluiten
+van Safari is waar deze extensie voor bestaat. Voor dagelijks gebruik dus de app installeren.
+
+Gebruik er één van beide tegelijk, niet allebei: het worden twee losse extensies met elk hun eigen
+geheugen.
 
 ## Wat er niet bewaard wordt
 

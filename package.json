@@ -1,6 +1,6 @@
 {
   "name": "venster-memory",
-  "version": "1.0.0",
+  "version": "1.1",
   "private": true,
   "description": "Safari extension that hands a window its tabs back after you close it with the red button.",
   "scripts": {
