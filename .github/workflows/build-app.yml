@@ -72,12 +72,18 @@ jobs:
             echo "Het \`.command\` de eerste keer met rechtermuisknop → Open starten."
           } >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Attach to the release
-        if: startsWith(github.ref, 'refs/tags/')
+      - name: Publish the release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "${GITHUB_REF_NAME}" "${{ steps.pkg.outputs.zip }}" \
-            --title "Venster-Memory ${GITHUB_REF_NAME}" \
-            --notes "Pak de zip uit en start **Installeer Venster-Memory.command** met rechtermuisknop → Open. Daarna in Safari aanzetten; zie LEES MIJ.md in de zip." \
-            || gh release upload "${GITHUB_REF_NAME}" "${{ steps.pkg.outputs.zip }}" --clobber
+          set -euo pipefail
+          TAG="v${{ steps.pkg.outputs.version }}"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "${{ steps.pkg.outputs.zip }}" --clobber
+          else
+            gh release create "$TAG" "${{ steps.pkg.outputs.zip }}" \
+              --target "$GITHUB_SHA" \
+              --title "Venster-Memory ${{ steps.pkg.outputs.version }}" \
+              --notes-file packaging/RELEASE-NOTES.md
+          fi
+          echo "release: $(gh release view "$TAG" --json url --jq .url)" >> "$GITHUB_STEP_SUMMARY"
