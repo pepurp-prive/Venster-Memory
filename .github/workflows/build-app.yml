@@ -61,6 +61,12 @@ jobs:
           test -f "$LOOSE/manifest.json" || { echo "no loose extension folder"; exit 1; }
           test -f "$LOOSE/background.js" || { echo "loose folder is incomplete"; exit 1; }
 
+          # The app, the extension and the zip must all claim the same version,
+          # or a download looks like it might be the previous one.
+          APP_VERSION="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$APP/Contents/Info.plist")"
+          test "$APP_VERSION" = "${{ steps.pkg.outputs.version }}" \
+            || { echo "app says $APP_VERSION, manifest says ${{ steps.pkg.outputs.version }}"; exit 1; }
+
           echo "OK: $(basename "$APPEX")"
 
       - uses: actions/upload-artifact@v4
