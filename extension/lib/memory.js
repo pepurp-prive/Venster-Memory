@@ -54,6 +54,11 @@
   /** Push a closed window onto the front of the list and trim to `max`. */
   async function rememberClosed(entry, max) {
     const list = await getClosedWindows();
+    // The same window can be offered twice: once by windows.onRemoved and once
+    // by the reconcile that covers a background page suspended mid-close. The
+    // uid it carried while it was open settles which is which.
+    if (entry.uid && list.some((existing) => existing.uid === entry.uid)) return null;
+
     const stamped = Object.assign({ id: newId(), closedAt: Date.now() }, entry);
     list.unshift(stamped);
     await setClosedWindows(list.slice(0, Math.max(1, max)));
@@ -115,6 +120,20 @@
   }
 
   /**
+   * Why the last new window did or did not get its tabs back. Written on every
+   * decision and shown in the popup: without a Mac to test on, this is the only
+   * way to tell "it never fired" from "it fired and found nothing".
+   */
+  async function setDecision(code, detail) {
+    await patchState({ decision: { code, detail: detail === undefined ? '' : String(detail), at: Date.now() } });
+    return code;
+  }
+
+  async function getDecision() {
+    return (await getState()).decision || null;
+  }
+
+  /**
    * True while a restore is running. A lock left behind by a crashed or
    * suspended background page expires instead of wedging the extension.
    */
@@ -156,6 +175,8 @@
     patchState,
     getSessionId,
     bumpSessionId,
+    setDecision,
+    getDecision,
     isRestoring,
     setRestoring,
     clearAll,

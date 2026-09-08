@@ -413,3 +413,111 @@ test('each Safari launch starts a new session', async () => {
   await memory.setRestoring(false);
   assert.equal(await memory.getSessionId(), first + 1);
 });
+
+test('the red button, with the close event never getting through', async () => {
+  const mock = await setup();
+
+  // Six tabs, the way it actually goes wrong.
+  const working = mock.openWindow({
+    tabs: Array.from({ length: 6 }, (_, i) => ({ url: `https://tab-${i}.test`, title: `Tab ${i}` })),
+  });
+  await track.snapshotAll();
+
+  // The red button. Safari suspends the background page before
+  // windows.onRemoved has finished writing, so onWindowRemoved never runs.
+  mock.closeWindow(working);
+  assert.deepEqual(await memory.getClosedWindows(), [], 'nothing was recorded on close');
+
+  // Opening a new window in the same profile has to rescue it anyway.
+  const reopened = mock.openWindow({ tabs: [{ url: 'favorites://' }] });
+  await controller.onWindowCreated(reopened);
+
+  assert.deepEqual(
+    mock.tabUrls(reopened),
+    Array.from({ length: 6 }, (_, i) => `https://tab-${i}.test`),
+    'all six tabs are back'
+  );
+  assert.equal((await memory.getDecision()).code, 'restored');
+});
+
+test('a window offered twice is remembered once', async () => {
+  const mock = await setup();
+
+  const working = mock.openWindow({ tabs: [{ url: 'https://a.test' }, { url: 'https://b.test' }] });
+  await track.snapshotAll();
+
+  // The close event does get through this time...
+  mock.closeWindow(working);
+  await controller.onWindowRemoved(working);
+  assert.equal((await memory.getClosedWindows()).length, 1);
+
+  // ...and the reconcile runs over the same window right after.
+  await track.reconcileClosed([], await memory.getSessionId(), 20);
+  assert.equal((await memory.getClosedWindows()).length, 1, 'not remembered twice');
+
+  const reopened = mock.openWindow({ tabs: [{ url: 'favorites://' }] });
+  await controller.onWindowCreated(reopened);
+  assert.deepEqual(mock.tabUrls(reopened), ['https://a.test', 'https://b.test']);
+});
+
+test('a start window with a second blank tab still counts as empty', async () => {
+  const mock = await setup();
+
+  const closed = mock.openWindow({ tabs: [{ url: 'https://remembered.test' }] });
+  await track.snapshotAll();
+  mock.closeWindow(closed);
+  await controller.onWindowRemoved(closed);
+
+  const reopened = mock.openWindow({ tabs: [{ url: 'favorites://' }, { url: 'about:blank' }] });
+  await controller.onWindowCreated(reopened);
+
+  assert.ok(mock.tabUrls(reopened).includes('https://remembered.test'));
+});
+
+test('the popup can hand everything back on request', async () => {
+  const mock = await setup();
+
+  for (const url of ['https://one.test', 'https://two.test']) {
+    const id = mock.openWindow({ tabs: [{ url }] });
+    await track.snapshotAll();
+    mock.closeWindow(id);
+    await controller.onWindowRemoved(id);
+  }
+
+  // A window is already open, so nothing happens automatically.
+  const open = mock.openWindow({ tabs: [{ url: 'https://busy.test' }] });
+  mock.openWindow({ tabs: [{ url: 'favorites://' }] });
+  assert.equal((await memory.getClosedWindows()).length, 2);
+
+  const overview = await controller.handleMessage({ type: 'restoreAll' });
+
+  assert.deepEqual(overview.closed, [], 'the memory is spent');
+  const urls = mock.windowIds().flatMap((id) => mock.tabUrls(id));
+  assert.ok(urls.includes('https://one.test') && urls.includes('https://two.test'));
+  assert.ok(mock.windowIds().includes(open), 'the window you were working in is untouched');
+});
+
+test('every refusal to restore is recorded, so it can be explained', async () => {
+  const mock = await setup();
+
+  const fresh = mock.openWindow({ tabs: [{ url: 'favorites://' }] });
+  await controller.onWindowCreated(fresh);
+  assert.equal((await memory.getDecision()).code, 'nothing-remembered');
+
+  const closed = mock.openWindow({ tabs: [{ url: 'https://a.test' }] });
+  await track.snapshotAll();
+  mock.closeWindow(closed);
+  await controller.onWindowRemoved(closed);
+
+  // A window Safari filled itself.
+  const grouped = mock.openWindow({ tabs: [{ url: 'https://group.test' }] });
+  await controller.onWindowCreated(grouped);
+  const decision = await memory.getDecision();
+  assert.equal(decision.code, 'window-not-empty');
+  assert.equal(decision.detail, 'https://group.test');
+
+  // A second empty window while one is already open.
+  const second = mock.openWindow({ tabs: [{ url: 'favorites://' }] });
+  await controller.onWindowCreated(second);
+  assert.equal((await memory.getDecision()).code, 'not-first-window');
+});

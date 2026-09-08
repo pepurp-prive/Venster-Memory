@@ -115,44 +115,89 @@
   async function onWindowCreated(windowId) {
     await settled();
     const conf = await settings.get();
-    if (!conf.enabled) return null;
-    if (await memory.isRestoring()) return null;
+    if (!conf.enabled) {
+      await memory.setDecision('disabled');
+      return null;
+    }
+    if (await memory.isRestoring()) {
+      await memory.setDecision('busy');
+      return null;
+    }
 
     if (conf.settleDelayMs > 0) await api.sleep(conf.settleDelayMs);
-    if (await memory.isRestoring()) return null;
+    if (await memory.isRestoring()) {
+      await memory.setDecision('busy');
+      return null;
+    }
 
     let win;
     try {
       win = await api.windowsGet(windowId, { populate: true });
     } catch (_) {
+      await memory.setDecision('window-gone');
       return null; // closed again while we waited
     }
-    if (!win || !track.isBlankWindow(win)) return null;
+    if (!win) {
+      await memory.setDecision('window-gone');
+      return null;
+    }
 
     const all = await api.windowsGetAll({ populate: true });
     const normal = all.filter((w) => !w.incognito && (!w.type || w.type === 'normal'));
-    const isFirstWindow = normal.length <= 1;
+    const sessionId = await memory.getSessionId();
 
+    // Before deciding anything: the mirror may still list windows that are no
+    // longer open. Closing the last window of a profile can suspend the
+    // background page before windows.onRemoved finished writing, so this is
+    // what actually rescues the tabs you just closed.
+    await track.reconcileClosed(normal, sessionId, conf.maxRemembered);
+
+    if (!track.isBlankWindow(win)) {
+      const first = (win.tabs || [])[0];
+      await memory.setDecision('window-not-empty', first && first.url);
+      return null;
+    }
+
+    const isFirstWindow = normal.length <= 1;
     const closed = await memory.getClosedWindows();
-    if (!closed.length) return null;
+    if (!closed.length) {
+      await memory.setDecision('nothing-remembered');
+      return null;
+    }
 
     let wanted;
     if (isFirstWindow) {
-      if (!conf.restoreOnFirstWindow) return null;
+      if (!conf.restoreOnFirstWindow) {
+        await memory.setDecision('switched-off');
+        return null;
+      }
       // Only the windows from the session that just ended, so reopening Safari
       // after a fortnight does not throw twenty windows at you.
-      const sessionId = await memory.getSessionId();
       wanted = closed.filter((entry) =>
         (entry.sessionId === undefined ? sessionId : entry.sessionId) === sessionId
       );
       await memory.bumpSessionId();
-      if (!wanted.length) return null;
+      if (!wanted.length) {
+        await memory.setDecision('older-session', closed.length);
+        return null;
+      }
     } else {
-      if (!conf.restoreOnEveryNewWindow) return null;
+      if (!conf.restoreOnEveryNewWindow) {
+        await memory.setDecision('not-first-window', normal.length);
+        return null;
+      }
       wanted = closed.slice(0, 1);
     }
 
-    return performRestore(windowId, wanted.map((entry) => entry.id), conf);
+    try {
+      const records = await performRestore(windowId, wanted.map((entry) => entry.id), conf);
+      const tabs = (records || []).reduce((sum, r) => sum + r.tabIds.length, 0);
+      await memory.setDecision('restored', `${(records || []).length}/${tabs}`);
+      return records;
+    } catch (err) {
+      await memory.setDecision('failed', err && err.message);
+      throw err;
+    }
   }
 
   /** A window is gone: remember what was in it. */
@@ -198,8 +243,17 @@
       checkAccess(),
     ]);
     const live = await memory.getLiveWindows();
+    const decision = await memory.getDecision();
     const trackedTabs = Object.values(live).reduce((sum, w) => sum + w.tabs.length, 0);
-    return { settings: conf, closed, ops, access, trackedTabs, trackedWindows: Object.keys(live).length };
+    return {
+      settings: conf,
+      closed,
+      ops,
+      access,
+      decision,
+      trackedTabs,
+      trackedWindows: Object.keys(live).length,
+    };
   }
 
   /** Messages from the popup and the options page. */
@@ -210,6 +264,18 @@
       case 'restore':
         await restoreById(message.id, message.windowId);
         return getOverview();
+      case 'restoreAll': {
+        const conf = await settings.get();
+        const closed = await memory.getClosedWindows();
+        if (closed.length) {
+          await performRestore(
+            message.windowId === undefined ? null : message.windowId,
+            closed.map((entry) => entry.id),
+            conf
+          );
+        }
+        return getOverview();
+      }
       case 'undo':
         await undo();
         return getOverview();

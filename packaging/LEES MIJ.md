@@ -42,6 +42,19 @@ Safari geeft elk profiel zijn eigen kopie van een extensie, met een eigen geheug
 de bedoeling: *Persoonlijk* onthoudt alleen Persoonlijke vensters. Maar het betekent ook dat je
 **stap 3 en 4 in elk profiel** moet herhalen — in een nieuw profiel staan extensies standaard uit.
 
+## Handmatig terugzetten
+
+Klik op het **Venster-Memory-icoon** in de knoppenbalk van Safari. Bovenin staat een knop
+**"N venster(s) terugzetten"** die alles in één klik terugbrengt, en daaronder een lijst met elk
+onthouden venster apart — met het aantal tabbladen en wanneer je het sloot.
+
+Onderaan de popup staat één regel die zegt wat er bij het láátste nieuwe venster is gebeurd
+("tabbladen teruggezet", "Safari had het zelf al gevuld", "er was nog niets onthouden", ...).
+Werkt het automatisch herstellen niet, kijk dan daar eerst: die regel zegt precies waarom.
+
+Zie je het icoon niet? Rechtermuisknop op de knoppenbalk → **Pas knoppenbalk aan** en sleep
+Venster-Memory erin.
+
 ## Werkt het?
 
 1. Open drie tabbladen. De popup van de extensie zegt hoeveel er wordt bijgehouden.

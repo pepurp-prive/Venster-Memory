@@ -29,9 +29,14 @@ test('a window Safari has already filled is not blank', () => {
     'a single real tab means Safari populated it'
   );
   assert.equal(
-    track.isBlankWindow({ tabs: [{ url: 'favorites://' }, { url: 'favorites://' }] }),
+    track.isBlankWindow({ tabs: [{ url: 'favorites://' }, { url: 'about:blank' }] }),
+    true,
+    'a second blank tab does not make a window worth leaving alone'
+  );
+  assert.equal(
+    track.isBlankWindow({ tabs: [{ url: 'favorites://' }, { url: 'https://a.test' }] }),
     false,
-    'two tabs is not a fresh start window'
+    'one real tab is enough to leave it alone'
   );
   assert.equal(track.isBlankWindow({ incognito: true, tabs: [{ url: 'favorites://' }] }), false);
   assert.equal(track.isBlankWindow({ type: 'popup', tabs: [{ url: 'favorites://' }] }), false);

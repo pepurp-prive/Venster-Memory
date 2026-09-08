@@ -11,6 +11,9 @@ const els = {
   undoBox: document.getElementById('undo-box'),
   undo: document.getElementById('undo'),
   options: document.getElementById('options'),
+  restoreAllBox: document.getElementById('restore-all-box'),
+  restoreAll: document.getElementById('restore-all'),
+  why: document.getElementById('why'),
 };
 
 function t(key, subs) {
@@ -39,7 +42,7 @@ function send(message) {
 
 function render(overview) {
   if (!overview) return;
-  const { settings, closed, ops, access, trackedTabs, trackedWindows } = overview;
+  const { settings, closed, ops, access, decision, trackedTabs, trackedWindows } = overview;
 
   els.access.hidden = access !== 'blocked';
   els.undoBox.hidden = !ops || !ops.length;
@@ -47,6 +50,15 @@ function render(overview) {
   els.status.textContent = settings.enabled
     ? t('popupTracking', [String(trackedWindows), String(trackedTabs)])
     : t('popupDisabled');
+
+  els.restoreAllBox.hidden = closed.length === 0;
+  els.restoreAll.textContent = t('popupRestoreAll', [String(closed.length)]);
+
+  // Say what happened to the last window that opened. Without it, "nothing
+  // came back" is indistinguishable from "it never ran".
+  els.why.textContent = decision
+    ? `${t('popupWhy')}: ${t('reason_' + decision.code)}${decision.detail ? ` (${decision.detail})` : ''}`
+    : '';
 
   els.list.textContent = '';
   els.empty.hidden = closed.length > 0;
@@ -90,6 +102,12 @@ function render(overview) {
     els.list.append(li);
   }
 }
+
+els.restoreAll.addEventListener('click', async () => {
+  els.restoreAll.disabled = true;
+  render(await send({ type: 'restoreAll' }));
+  window.close();
+});
 
 els.undo.addEventListener('click', async () => {
   els.undo.disabled = true;

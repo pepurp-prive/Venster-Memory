@@ -21,16 +21,18 @@
   }
 
   /**
-   * A window Safari has just opened and not filled itself: exactly one tab,
-   * showing nothing worth remembering. A window that already holds real tabs
-   * was populated by Safari (a tab group, or a link from another app) and must
-   * be left alone.
+   * A window Safari opened and did not fill itself: nothing in it is worth
+   * remembering. A window that already holds a real tab was populated by
+   * Safari — a tab group, or a link from another app — and is left alone.
+   *
+   * Deliberately not "exactly one tab": Safari's start page is reported in
+   * more than one shape, and a window can come up with a second blank tab.
+   * Anything with no real tab in it is fair game.
    */
   function isBlankWindow(win) {
     if (!win || win.incognito) return false;
     if (win.type && win.type !== 'normal') return false;
-    const tabs = win.tabs || [];
-    return tabs.length === 1 && !isTrackableUrl(tabs[0].url);
+    return !(win.tabs || []).some((tab) => isTrackableUrl(tab.url));
   }
 
   /**
@@ -70,41 +72,87 @@
    *
    * Entries are updated and added, never dropped: a window that vanished
    * without a windows.onRemoved event — which is what quitting Safari looks
-   * like — has to survive here until harvestAll() collects it. Ordinary closes
-   * remove their own entry through handleWindowRemoved().
+   * like, and what a background page torn down mid-close looks like — has to
+   * survive here until it is collected.
+   *
+   * Every entry keeps a uid for as long as its window lives, so the same closed
+   * window cannot end up in the memory twice.
    */
   async function snapshotAll() {
     const windows = await api.windowsGetAll({ populate: true });
     const live = await memory.getLiveWindows();
     for (const win of windows) {
       const entry = normalizeWindow(win);
-      if (entry) live[String(win.id)] = entry;
+      if (!entry) continue;
+      const key = String(win.id);
+      entry.uid = (live[key] && live[key].uid) || memory.newId();
+      live[key] = entry;
     }
     await memory.setLiveWindows(live);
     return live;
   }
 
+  function toClosed(entry, sessionId) {
+    return {
+      uid: entry.uid,
+      tabs: entry.tabs,
+      activeIndex: entry.activeIndex,
+      bounds: entry.bounds,
+      sessionId,
+    };
+  }
+
   /**
-   * A window is gone. Move what we last knew about it into the closed list.
-   * Returns the stored entry, or null when there was nothing to remember.
+   * A window is gone. Move what we last knew about it into the memory.
+   *
+   * The memory is written before the mirror is trimmed: if Safari suspends the
+   * background page halfway — which it readily does when the last window of a
+   * profile closes — the tabs are already safe, and the leftover mirror entry
+   * is picked up by reconcileClosed() and deduplicated on its uid.
    */
   async function handleWindowRemoved(windowId, maxRemembered, sessionId) {
     const live = await memory.getLiveWindows();
     const key = String(windowId);
     const entry = live[key];
+    if (!entry || !entry.tabs || !entry.tabs.length) {
+      if (entry) {
+        delete live[key];
+        await memory.setLiveWindows(live);
+      }
+      return null;
+    }
+
+    const stored = await memory.rememberClosed(toClosed(entry, sessionId), maxRemembered);
     delete live[key];
     await memory.setLiveWindows(live);
+    return stored;
+  }
 
-    if (!entry || !entry.tabs || !entry.tabs.length) return null;
-    return memory.rememberClosed(
-      {
-        tabs: entry.tabs,
-        activeIndex: entry.activeIndex,
-        bounds: entry.bounds,
-        sessionId,
-      },
-      maxRemembered
-    );
+  /**
+   * Collect mirror entries whose window is no longer open.
+   *
+   * This is the safety net that makes the whole thing work: closing the last
+   * window of a profile can suspend the background page before onRemoved has
+   * finished writing, so the moment a new window appears we check the mirror
+   * against reality rather than trusting that the event got through.
+   */
+  async function reconcileClosed(openWindows, sessionId, maxRemembered) {
+    const live = await memory.getLiveWindows();
+    const openIds = new Set((openWindows || []).map((win) => String(win.id)));
+
+    const gone = Object.keys(live).filter((key) => !openIds.has(key));
+    if (!gone.length) return [];
+
+    const stored = [];
+    for (const key of gone) {
+      const entry = live[key];
+      if (entry && entry.tabs && entry.tabs.length) {
+        stored.push(await memory.rememberClosed(toClosed(entry, sessionId), maxRemembered));
+      }
+      delete live[key];
+    }
+    await memory.setLiveWindows(live);
+    return stored.filter(Boolean);
   }
 
   /**
@@ -120,19 +168,9 @@
     const stored = [];
     for (const entry of entries) {
       if (!entry.tabs || !entry.tabs.length) continue;
-      stored.push(
-        await memory.rememberClosed(
-          {
-            tabs: entry.tabs,
-            activeIndex: entry.activeIndex,
-            bounds: entry.bounds,
-            sessionId,
-          },
-          maxRemembered
-        )
-      );
+      stored.push(await memory.rememberClosed(toClosed(entry, sessionId), maxRemembered));
     }
-    return stored;
+    return stored.filter(Boolean);
   }
 
   return {
@@ -142,6 +180,7 @@
     normalizeWindow,
     snapshotAll,
     handleWindowRemoved,
+    reconcileClosed,
     harvestAll,
   };
 });

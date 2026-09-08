@@ -1,41 +1,161 @@
 {
-  "extName":        { "message": "Venster-Memory" },
-  "extDescription": { "message": "Een Safari-venster sluiten met het rode bolletje kost je je tabbladen niet meer. Open het venster weer en ze staan er — per profiel." },
-
-  "popupTitle":        { "message": "Onthouden vensters" },
-  "popupEmpty":        { "message": "Nog niets onthouden. Sluit een venster met het rode bolletje, dan verschijnt het hier." },
-  "popupTracking":     { "message": "$WINDOWS$ venster(s), $TABS$ tabblad(en) in dit profiel worden bijgehouden.", "placeholders": { "windows": { "content": "$1" }, "tabs": { "content": "$2" } } },
-  "popupRestore":      { "message": "Herstel" },
-  "popupForget":       { "message": "Vergeet" },
-  "popupUndo":         { "message": "Hersteld — ongedaan maken" },
-  "popupUndoHint":     { "message": "Toch in een venster met een tabbladgroep beland? Hiermee zet je alles terug." },
-  "popupTabCount":     { "message": "$COUNT$ tabbladen", "placeholders": { "count": { "content": "$1" } } },
-  "popupOptions":      { "message": "Instellingen" },
-  "popupDisabled":     { "message": "Venster-Memory staat uit." },
-
-  "accessTitle":   { "message": "Safari geeft nog geen toegang tot je tabbladen" },
-  "accessBody":    { "message": "Zonder die toegang ziet de extensie geen enkele URL en kan er niets onthouden worden. Klik op het extensie-icoon in de knoppenbalk en kies “Altijd toestaan op elke website”, of stel het in via Safari → Instellingen → Extensies." },
-  "accessButton":  { "message": "Hoe doe ik dat?" },
-
-  "optionsTitle":            { "message": "Instellingen van Venster-Memory" },
-  "optionsProfileNote":      { "message": "Deze instellingen en dit geheugen horen bij het Safari-profiel waar je nu in zit. Elk profiel houdt zijn eigen bij." },
-  "optionsEnabled":          { "message": "Vensters onthouden" },
-  "optionsFirstWindow":      { "message": "Alle vensters terugzetten zodra Safari weer opent" },
-  "optionsEveryWindow":      { "message": "Ook bij elk nieuw leeg venster het laatst gesloten venster teruggeven" },
-  "optionsEveryWindowHint":  { "message": "Standaard uit: een venster dat je zelf opent blijft leeg." },
-  "optionsMax":              { "message": "Hoeveel gesloten vensters onthouden" },
-  "optionsDelay":            { "message": "Pauze tussen tabbladen tijdens herstellen (ms)" },
-  "optionsSettle":           { "message": "Wachttijd voordat een venster leeg heet (ms)" },
-  "optionsSettleHint":       { "message": "Dit is de tijd die Safari krijgt om een tabbladgroep zelf te vullen." },
-  "optionsClear":            { "message": "Geheugen wissen" },
-  "optionsClearConfirm":     { "message": "Alle onthouden vensters in dit profiel wissen?" },
-  "optionsSaved":            { "message": "Bewaard" },
-
-  "welcomeTitle":   { "message": "Nog één ding" },
-  "welcomeIntro":   { "message": "Safari geeft een extensie je tabblad-URL's pas als jij dat zegt. Tot die tijd ziet Venster-Memory niets en onthoudt het niets." },
-  "welcomeStep1":   { "message": "Klik op het Venster-Memory-icoon in de knoppenbalk van Safari." },
-  "welcomeStep2":   { "message": "Kies “Altijd toestaan op elke website”." },
-  "welcomeStep3":   { "message": "Herhaal dit in elk profiel waar je het wilt: in een nieuw profiel staan extensies standaard uit, en elk profiel houdt zijn eigen geheugen bij." },
-  "welcomeDone":    { "message": "Meer is het niet. Sluit een venster met het rode bolletje, open Safari weer, en je tabbladen staan er." },
-  "welcomeGroups":  { "message": "Tabbladgroepen laat de extensie met rust — die bewaart Safari zelf al. Dit gaat om de losse tabbladen bovenaan de zijbalk, het item “<profiel> — N tabbladen”." }
+  "extName": {
+    "message": "Venster-Memory"
+  },
+  "extDescription": {
+    "message": "Een Safari-venster sluiten met het rode bolletje kost je je tabbladen niet meer. Open het venster weer en ze staan er — per profiel."
+  },
+  "popupTitle": {
+    "message": "Onthouden vensters"
+  },
+  "popupEmpty": {
+    "message": "Nog niets onthouden. Sluit een venster met het rode bolletje, dan verschijnt het hier."
+  },
+  "popupTracking": {
+    "message": "$WINDOWS$ venster(s), $TABS$ tabblad(en) in dit profiel worden bijgehouden.",
+    "placeholders": {
+      "windows": {
+        "content": "$1"
+      },
+      "tabs": {
+        "content": "$2"
+      }
+    }
+  },
+  "popupRestore": {
+    "message": "Herstel"
+  },
+  "popupForget": {
+    "message": "Vergeet"
+  },
+  "popupUndo": {
+    "message": "Hersteld — ongedaan maken"
+  },
+  "popupUndoHint": {
+    "message": "Toch in een venster met een tabbladgroep beland? Hiermee zet je alles terug."
+  },
+  "popupTabCount": {
+    "message": "$COUNT$ tabbladen",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "popupOptions": {
+    "message": "Instellingen"
+  },
+  "popupDisabled": {
+    "message": "Venster-Memory staat uit."
+  },
+  "accessTitle": {
+    "message": "Safari geeft nog geen toegang tot je tabbladen"
+  },
+  "accessBody": {
+    "message": "Zonder die toegang ziet de extensie geen enkele URL en kan er niets onthouden worden. Klik op het extensie-icoon in de knoppenbalk en kies “Altijd toestaan op elke website”, of stel het in via Safari → Instellingen → Extensies."
+  },
+  "accessButton": {
+    "message": "Hoe doe ik dat?"
+  },
+  "optionsTitle": {
+    "message": "Instellingen van Venster-Memory"
+  },
+  "optionsProfileNote": {
+    "message": "Deze instellingen en dit geheugen horen bij het Safari-profiel waar je nu in zit. Elk profiel houdt zijn eigen bij."
+  },
+  "optionsEnabled": {
+    "message": "Vensters onthouden"
+  },
+  "optionsFirstWindow": {
+    "message": "Alle vensters terugzetten zodra Safari weer opent"
+  },
+  "optionsEveryWindow": {
+    "message": "Ook bij elk nieuw leeg venster het laatst gesloten venster teruggeven"
+  },
+  "optionsEveryWindowHint": {
+    "message": "Standaard uit: een venster dat je zelf opent blijft leeg."
+  },
+  "optionsMax": {
+    "message": "Hoeveel gesloten vensters onthouden"
+  },
+  "optionsDelay": {
+    "message": "Pauze tussen tabbladen tijdens herstellen (ms)"
+  },
+  "optionsSettle": {
+    "message": "Wachttijd voordat een venster leeg heet (ms)"
+  },
+  "optionsSettleHint": {
+    "message": "Dit is de tijd die Safari krijgt om een tabbladgroep zelf te vullen."
+  },
+  "optionsClear": {
+    "message": "Geheugen wissen"
+  },
+  "optionsClearConfirm": {
+    "message": "Alle onthouden vensters in dit profiel wissen?"
+  },
+  "optionsSaved": {
+    "message": "Bewaard"
+  },
+  "welcomeTitle": {
+    "message": "Nog één ding"
+  },
+  "welcomeIntro": {
+    "message": "Safari geeft een extensie je tabblad-URL's pas als jij dat zegt. Tot die tijd ziet Venster-Memory niets en onthoudt het niets."
+  },
+  "welcomeStep1": {
+    "message": "Klik op het Venster-Memory-icoon in de knoppenbalk van Safari."
+  },
+  "welcomeStep2": {
+    "message": "Kies “Altijd toestaan op elke website”."
+  },
+  "welcomeStep3": {
+    "message": "Herhaal dit in elk profiel waar je het wilt: in een nieuw profiel staan extensies standaard uit, en elk profiel houdt zijn eigen geheugen bij."
+  },
+  "welcomeDone": {
+    "message": "Meer is het niet. Sluit een venster met het rode bolletje, open Safari weer, en je tabbladen staan er."
+  },
+  "welcomeGroups": {
+    "message": "Tabbladgroepen laat de extensie met rust — die bewaart Safari zelf al. Dit gaat om de losse tabbladen bovenaan de zijbalk, het item “<profiel> — N tabbladen”."
+  },
+  "popupRestoreAll": {
+    "message": "$COUNT$ venster(s) terugzetten",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "popupWhy": {
+    "message": "Laatste nieuwe venster"
+  },
+  "reason_restored": {
+    "message": "tabbladen teruggezet"
+  },
+  "reason_disabled": {
+    "message": "de extensie staat uit"
+  },
+  "reason_busy": {
+    "message": "er liep al een herstel"
+  },
+  "reason_window-gone": {
+    "message": "het venster ging weer dicht voordat het gevuld kon worden"
+  },
+  "reason_window-not-empty": {
+    "message": "Safari had het zelf al gevuld, dus met rust gelaten"
+  },
+  "reason_nothing-remembered": {
+    "message": "er was nog niets onthouden"
+  },
+  "reason_switched-off": {
+    "message": "terugzetten bij het eerste venster staat uit"
+  },
+  "reason_older-session": {
+    "message": "alleen vensters uit een eerdere sessie over — gebruik de knop hierboven"
+  },
+  "reason_not-first-window": {
+    "message": "er stonden al andere vensters open, dus leeg gelaten"
+  },
+  "reason_failed": {
+    "message": "terugzetten is mislukt"
+  }
 }

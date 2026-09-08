@@ -1,41 +1,161 @@
 {
-  "extName":        { "message": "Venster-Memory" },
-  "extDescription": { "message": "Closing a Safari window with the red button no longer loses its tabs. Reopen the window and they are back — per profile." },
-
-  "popupTitle":        { "message": "Remembered windows" },
-  "popupEmpty":        { "message": "Nothing remembered yet. Close a window with the red button and it will show up here." },
-  "popupTracking":     { "message": "Watching $WINDOWS$ window(s), $TABS$ tab(s) in this profile.", "placeholders": { "windows": { "content": "$1" }, "tabs": { "content": "$2" } } },
-  "popupRestore":      { "message": "Restore" },
-  "popupForget":       { "message": "Forget" },
-  "popupUndo":         { "message": "Restored — undo" },
-  "popupUndoHint":     { "message": "Opened in a window that already had a tab group? Undo puts everything back." },
-  "popupTabCount":     { "message": "$COUNT$ tabs", "placeholders": { "count": { "content": "$1" } } },
-  "popupOptions":      { "message": "Settings" },
-  "popupDisabled":     { "message": "Venster-Memory is switched off." },
-
-  "accessTitle":   { "message": "Safari is not giving access to your tabs yet" },
-  "accessBody":    { "message": "Without it the extension cannot see a single URL and can remember nothing. Click the extension icon in the toolbar and choose “Always Allow on Every Website”, or set it in Safari → Settings → Extensions." },
-  "accessButton":  { "message": "How do I do that?" },
-
-  "optionsTitle":            { "message": "Venster-Memory settings" },
-  "optionsProfileNote":      { "message": "These settings and this memory belong to the Safari profile you are in right now. Every profile keeps its own." },
-  "optionsEnabled":          { "message": "Remember windows" },
-  "optionsFirstWindow":      { "message": "Bring every window back when Safari opens again" },
-  "optionsEveryWindow":      { "message": "Also hand back the last closed window on every new empty window" },
-  "optionsEveryWindowHint":  { "message": "Off by default: a new window you open yourself stays empty." },
-  "optionsMax":              { "message": "How many closed windows to remember" },
-  "optionsDelay":            { "message": "Pause between tabs while restoring (ms)" },
-  "optionsSettle":           { "message": "Wait before deciding a window is empty (ms)" },
-  "optionsSettleHint":       { "message": "This is the grace period that lets Safari fill a tab group first." },
-  "optionsClear":            { "message": "Erase memory" },
-  "optionsClearConfirm":     { "message": "Erase every remembered window in this profile?" },
-  "optionsSaved":            { "message": "Saved" },
-
-  "welcomeTitle":   { "message": "One thing left to do" },
-  "welcomeIntro":   { "message": "Safari does not hand an extension your tab URLs until you say so. Until you do, Venster-Memory can see nothing and remember nothing." },
-  "welcomeStep1":   { "message": "Click the Venster-Memory icon in the Safari toolbar." },
-  "welcomeStep2":   { "message": "Choose “Always Allow on Every Website”." },
-  "welcomeStep3":   { "message": "Repeat this in every profile where you want it: extensions are off by default in a new profile, and each profile keeps its own memory." },
-  "welcomeDone":    { "message": "That is all. Close a window with the red button, open Safari again, and your tabs are back." },
-  "welcomeGroups":  { "message": "Tab groups are left alone — Safari already saves those itself. This is for the loose tabs at the top of the sidebar, the “<profile> — N tabs” entry." }
+  "extName": {
+    "message": "Venster-Memory"
+  },
+  "extDescription": {
+    "message": "Closing a Safari window with the red button no longer loses its tabs. Reopen the window and they are back — per profile."
+  },
+  "popupTitle": {
+    "message": "Remembered windows"
+  },
+  "popupEmpty": {
+    "message": "Nothing remembered yet. Close a window with the red button and it will show up here."
+  },
+  "popupTracking": {
+    "message": "Watching $WINDOWS$ window(s), $TABS$ tab(s) in this profile.",
+    "placeholders": {
+      "windows": {
+        "content": "$1"
+      },
+      "tabs": {
+        "content": "$2"
+      }
+    }
+  },
+  "popupRestore": {
+    "message": "Restore"
+  },
+  "popupForget": {
+    "message": "Forget"
+  },
+  "popupUndo": {
+    "message": "Restored — undo"
+  },
+  "popupUndoHint": {
+    "message": "Opened in a window that already had a tab group? Undo puts everything back."
+  },
+  "popupTabCount": {
+    "message": "$COUNT$ tabs",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "popupOptions": {
+    "message": "Settings"
+  },
+  "popupDisabled": {
+    "message": "Venster-Memory is switched off."
+  },
+  "accessTitle": {
+    "message": "Safari is not giving access to your tabs yet"
+  },
+  "accessBody": {
+    "message": "Without it the extension cannot see a single URL and can remember nothing. Click the extension icon in the toolbar and choose “Always Allow on Every Website”, or set it in Safari → Settings → Extensions."
+  },
+  "accessButton": {
+    "message": "How do I do that?"
+  },
+  "optionsTitle": {
+    "message": "Venster-Memory settings"
+  },
+  "optionsProfileNote": {
+    "message": "These settings and this memory belong to the Safari profile you are in right now. Every profile keeps its own."
+  },
+  "optionsEnabled": {
+    "message": "Remember windows"
+  },
+  "optionsFirstWindow": {
+    "message": "Bring every window back when Safari opens again"
+  },
+  "optionsEveryWindow": {
+    "message": "Also hand back the last closed window on every new empty window"
+  },
+  "optionsEveryWindowHint": {
+    "message": "Off by default: a new window you open yourself stays empty."
+  },
+  "optionsMax": {
+    "message": "How many closed windows to remember"
+  },
+  "optionsDelay": {
+    "message": "Pause between tabs while restoring (ms)"
+  },
+  "optionsSettle": {
+    "message": "Wait before deciding a window is empty (ms)"
+  },
+  "optionsSettleHint": {
+    "message": "This is the grace period that lets Safari fill a tab group first."
+  },
+  "optionsClear": {
+    "message": "Erase memory"
+  },
+  "optionsClearConfirm": {
+    "message": "Erase every remembered window in this profile?"
+  },
+  "optionsSaved": {
+    "message": "Saved"
+  },
+  "welcomeTitle": {
+    "message": "One thing left to do"
+  },
+  "welcomeIntro": {
+    "message": "Safari does not hand an extension your tab URLs until you say so. Until you do, Venster-Memory can see nothing and remember nothing."
+  },
+  "welcomeStep1": {
+    "message": "Click the Venster-Memory icon in the Safari toolbar."
+  },
+  "welcomeStep2": {
+    "message": "Choose “Always Allow on Every Website”."
+  },
+  "welcomeStep3": {
+    "message": "Repeat this in every profile where you want it: extensions are off by default in a new profile, and each profile keeps its own memory."
+  },
+  "welcomeDone": {
+    "message": "That is all. Close a window with the red button, open Safari again, and your tabs are back."
+  },
+  "welcomeGroups": {
+    "message": "Tab groups are left alone — Safari already saves those itself. This is for the loose tabs at the top of the sidebar, the “<profile> — N tabs” entry."
+  },
+  "popupRestoreAll": {
+    "message": "Bring back $COUNT$ window(s)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "popupWhy": {
+    "message": "Last new window"
+  },
+  "reason_restored": {
+    "message": "tabs handed back"
+  },
+  "reason_disabled": {
+    "message": "the extension is switched off"
+  },
+  "reason_busy": {
+    "message": "a restore was already running"
+  },
+  "reason_window-gone": {
+    "message": "the window closed again before it could be filled"
+  },
+  "reason_window-not-empty": {
+    "message": "Safari had already filled it, so it was left alone"
+  },
+  "reason_nothing-remembered": {
+    "message": "nothing was remembered yet"
+  },
+  "reason_switched-off": {
+    "message": "restoring on the first window is switched off"
+  },
+  "reason_older-session": {
+    "message": "only windows from an earlier session are left — use the button above"
+  },
+  "reason_not-first-window": {
+    "message": "other windows were already open, so it was left empty"
+  },
+  "reason_failed": {
+    "message": "restoring failed"
+  }
 }
