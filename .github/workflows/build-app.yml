@@ -48,6 +48,10 @@ jobs:
           /usr/libexec/PlistBuddy -c 'Print :NSExtension:NSExtensionPointIdentifier' "$APPEX/Contents/Info.plist" \
             | grep -qx 'com.apple.Safari.web-extension'
           codesign --verify --deep --strict --verbose=2 "$APP"
+
+          echo "architecturen: $(lipo -archs "$APP/Contents/MacOS/Venster Memory")"
+          echo "minimaal macOS: $(/usr/libexec/PlistBuddy -c 'Print :LSMinimumSystemVersion' "$APP/Contents/Info.plist")"
+          lipo -archs "$APP/Contents/MacOS/Venster Memory" | grep -q x86_64 || { echo "not universal"; exit 1; }
           echo "OK: $(basename "$APPEX")"
 
       - uses: actions/upload-artifact@v4

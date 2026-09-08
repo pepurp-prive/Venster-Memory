@@ -10,6 +10,10 @@
 #
 # Needs macOS with Xcode. Everything is signed ad-hoc: a Safari appex with no
 # signature at all will not load, not even with "Allow Unsigned Extensions" on.
+#
+# Built universal and against macOS 14. Left to itself the runner builds
+# arm64-only against whatever SDK it happens to carry, which would refuse to
+# run on an Intel Mac or on anything older than the runner image.
 
 set -euo pipefail
 
@@ -51,6 +55,9 @@ xcodebuild \
   -configuration Release \
   -derivedDataPath "$DERIVED" \
   -destination 'platform=macOS' \
+  MACOSX_DEPLOYMENT_TARGET=14.0 \
+  ARCHS="arm64 x86_64" \
+  ONLY_ACTIVE_ARCH=NO \
   CODE_SIGN_IDENTITY="-" \
   CODE_SIGN_STYLE=Manual \
   DEVELOPMENT_TEAM="" \
