@@ -20,10 +20,11 @@ Pak de nieuwste zip van de [Releases-pagina](https://github.com/pepurp-prive/Ven
    met de rechtermuisknop, anders houdt Gatekeeper het tegen omdat het bestand van internet komt.
 3. In Safari aanzetten — de stappen staan in **LEES MIJ.md** in de zip.
 
-Geef de uitgepakte map niet aan *Ontwikkelaar → Voeg tijdelijke extensie toe*: daar zit de app in,
-geen losse extensie, dus Safari antwoordt met "Extensie niet ondersteund". Voor die route zit er een
-map **Extensie-map (tijdelijk laden)** in de zip — die is alleen om even te proberen, want Safari
-laadt een tijdelijke extensie uit zodra je afsluit.
+Geef de app-zip niet aan *Ontwikkelaar → Voeg tijdelijke extensie toe*: daar zit de app in, geen
+losse extensie, dus Safari antwoordt met "Extensie niet ondersteund". Voor die route staat er een
+tweede download bij elke release, **`Venster-Memory-extensie-<versie>.zip`**, die uitpakt naar
+precies de map die Safari daar vraagt. Alleen om even te proberen: een tijdelijke extensie wordt
+uitgeladen zodra je Safari afsluit, en dat is nu juist het moment waar deze extensie voor bestaat.
 
 Twee dingen om vooraf te weten:
 

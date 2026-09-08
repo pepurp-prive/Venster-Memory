@@ -36,6 +36,7 @@ jobs:
           VERSION="$(python3 -c "import json;print(json.load(open('extension/manifest.json'))['version'])")"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "zip=dist/Venster-Memory-$VERSION.zip" >> "$GITHUB_OUTPUT"
+          echo "loose=dist/Venster-Memory-extensie-$VERSION.zip" >> "$GITHUB_OUTPUT"
 
       - name: Check the bundle really contains the extension
         run: |
@@ -54,12 +55,18 @@ jobs:
           echo "minimaal macOS: $(/usr/libexec/PlistBuddy -c 'Print :LSMinimumSystemVersion' "$APP/Contents/Info.plist")"
           lipo -archs "$APP/Contents/MacOS/Venster Memory" | grep -q x86_64 || { echo "not universal"; exit 1; }
 
-          # The folder Safari's "Add Temporary Extension..." expects must exist
-          # and must have its manifest at the root, or picking it just gives
-          # "Extensie niet ondersteund".
-          LOOSE="$STAGE/Extensie-map (tijdelijk laden)"
-          test -f "$LOOSE/manifest.json" || { echo "no loose extension folder"; exit 1; }
-          test -f "$LOOSE/background.js" || { echo "loose folder is incomplete"; exit 1; }
+          # Unpacking the extension zip must land you straight on the folder
+          # Safari's "Add Temporary Extension..." wants: manifest.json at the
+          # root, no wrapper to descend into. Prove it by unpacking the zip that
+          # actually ships, not the directory it was built from.
+          CHECK="$(mktemp -d)"
+          ditto -x -k "${{ steps.pkg.outputs.loose }}" "$CHECK"
+          test "$(ls "$CHECK" | wc -l | tr -d ' ')" = 1 || { echo "extension zip has more than one top-level entry"; ls "$CHECK"; exit 1; }
+          LOOSE="$CHECK/$(ls "$CHECK")"
+          test -f "$LOOSE/manifest.json" || { echo "no manifest.json at the root of the extension zip"; exit 1; }
+          test -f "$LOOSE/background.js" || { echo "extension zip is incomplete"; exit 1; }
+          test ! -d "$LOOSE/Venster Memory.app" || { echo "the extension zip must not carry the app"; exit 1; }
+          echo "extensie-zip pakt uit naar: $(basename "$LOOSE")/manifest.json"
 
           # The app, the extension and the zip must all claim the same version,
           # or a download looks like it might be the previous one.
@@ -72,7 +79,9 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: Venster-Memory-${{ steps.pkg.outputs.version }}
-          path: ${{ steps.pkg.outputs.zip }}
+          path: |
+            ${{ steps.pkg.outputs.zip }}
+            ${{ steps.pkg.outputs.loose }}
           if-no-files-found: error
 
       - name: Note how it is signed
@@ -94,9 +103,13 @@ jobs:
           set -euo pipefail
           TAG="v${{ steps.pkg.outputs.version }}"
           if gh release view "$TAG" >/dev/null 2>&1; then
-            gh release upload "$TAG" "${{ steps.pkg.outputs.zip }}" --clobber
+            gh release upload "$TAG" \
+              "${{ steps.pkg.outputs.zip }}" \
+              "${{ steps.pkg.outputs.loose }}" --clobber
           else
-            gh release create "$TAG" "${{ steps.pkg.outputs.zip }}" \
+            gh release create "$TAG" \
+              "${{ steps.pkg.outputs.zip }}" \
+              "${{ steps.pkg.outputs.loose }}" \
               --target "$GITHUB_SHA" \
               --title "Venster-Memory ${{ steps.pkg.outputs.version }}" \
               --notes-file packaging/RELEASE-NOTES.md

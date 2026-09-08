@@ -14,7 +14,8 @@ Gatekeeper het tegen. Klik in het venster dat verschijnt nog een keer op **Open*
 
 > **Geef deze map niet aan Safari.** Kies je hem bij *Ontwikkelaar → Voeg tijdelijke extensie toe*,
 > dan krijg je **"Extensie niet ondersteund"**. Klopt ook: in deze map zit een app, geen losse
-> extensie. Wil je die route toch, zie *Alternatief* onderaan.
+> extensie. Voor die route is er een aparte download, `Venster-Memory-extensie-<versie>.zip` —
+> zie *Alternatief* onderaan.
 
 Wat het installatiescript doet: de app naar `/Applications` zetten, een oude versie naar de
 prullenmand, de extensie bij Safari aanmelden en de app openen.
@@ -69,12 +70,17 @@ Verder:
 
 ## Alternatief: tijdelijk laden, zonder installeren
 
-Alleen om snel te kijken of het werkt. **Ontwikkelaar → Voeg tijdelijke extensie toe** en kies de
-map **`Extensie-map (tijdelijk laden)`** hiernaast — díe map heeft een `manifest.json` in de wortel,
-dus die accepteert Safari wel.
+Alleen om snel te kijken of het werkt.
+
+1. Download **`Venster-Memory-extensie-<versie>.zip`** van de Releases-pagina — een aparte zip, niet
+   deze.
+2. Pak hem uit. Je krijgt één map: `Venster-Memory-extensie`.
+3. **Ontwikkelaar → Voeg tijdelijke extensie toe** en kies precies die map. Niet een map eromheen:
+   Safari wil de map waarin `manifest.json` zelf ligt.
 
 Maar: een tijdelijke extensie wordt **uitgeladen zodra je Safari afsluit**. En juist het afsluiten
-van Safari is waar deze extensie voor bestaat. Voor dagelijks gebruik dus de app installeren.
+van Safari is waar deze extensie voor bestaat — na een herstart is hij weg en herstelt hij dus
+niets. Voor dagelijks gebruik moet je de app installeren.
 
 Gebruik er één van beide tegelijk, niet allebei: het worden twee losse extensies met elk hun eigen
 geheugen.

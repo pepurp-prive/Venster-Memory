@@ -8,10 +8,16 @@ weer opent. Venster-Memory onthoudt ze en zet ze terug — per profiel.
    de rechtermuisknop, anders houdt Gatekeeper het tegen omdat het bestand van internet komt.
 3. Zet de extensie aan in Safari. De stappen staan in **LEES MIJ.md** in de zip.
 
-Geef de uitgepakte map **niet** aan *Ontwikkelaar → Voeg tijdelijke extensie toe*; daar zit een app
-in, geen losse extensie, en Safari antwoordt dan met "Extensie niet ondersteund". Wil je die route
-toch, kies dan de map **Extensie-map (tijdelijk laden)** die in de zip meekomt — maar houd er
-rekening mee dat een tijdelijke extensie verdwijnt zodra je Safari afsluit.
+### Twee downloads
+
+- **`Venster-Memory-<versie>.zip`** — de app met de extensie erin. Dit is degene die je wilt.
+- **`Venster-Memory-extensie-<versie>.zip`** — alleen de extensie, voor
+  *Ontwikkelaar → Voeg tijdelijke extensie toe*. Uitpakken geeft precies de map die Safari daar
+  vraagt. Let op: een tijdelijke extensie wordt uitgeladen zodra je Safari afsluit, en dat is nu
+  net het moment waar deze extensie voor bestaat. Alleen om even te proberen dus.
+
+Geef de app-zip **niet** aan *Voeg tijdelijke extensie toe*: daar zit een app in, geen losse
+extensie, en Safari antwoordt dan met "Extensie niet ondersteund".
 
 Vergeet stap 3 niet helemaal af te maken: zet de toegang op **"Toestaan op elke website"**. Zonder
 dat geeft Safari geen enkele tabblad-URL door en onthoudt de extensie niets. Herhaal het in elk

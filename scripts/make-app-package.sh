@@ -34,9 +34,10 @@ PACKAGE="Venster-Memory-$VERSION"
 # "Venster-Memory-1.0" as a file extension and shows it as "Venster-Memory-1",
 # which reads like a stray copy.
 STAGE_NAME="Venster-Memory"
-# A copy of the plain extension, for Develop > "Add Temporary Extension...",
-# which wants a folder with manifest.json at its root.
-LOOSE_NAME="Extensie-map (tijdelijk laden)"
+# A second download: the plain extension, for Develop > "Add Temporary
+# Extension...". Unpacking it gives you exactly the folder to select.
+LOOSE_NAME="Venster-Memory-extensie"
+LOOSE_PACKAGE="Venster-Memory-extensie-$VERSION"
 
 echo "==> Generating the Xcode project"
 rm -rf "$BUILD_DIR" "$DIST_DIR"
@@ -96,15 +97,22 @@ ditto "$ROOT/packaging/Installeer Venster-Memory.command" "$STAGE/Installeer Ven
 ditto "$ROOT/packaging/LEES MIJ.md" "$STAGE/LEES MIJ.md"
 chmod +x "$STAGE/Installeer Venster-Memory.command"
 
-# Safari's "Add Temporary Extension..." asks for a folder with manifest.json at
-# its root. Pointing it at the package folder gets you "Extensie niet
-# ondersteund", so ship the plain extension alongside the app.
-ditto "$ROOT/extension" "$STAGE/$LOOSE_NAME"
-test -f "$STAGE/$LOOSE_NAME/manifest.json"
-
 # ditto, not zip: a plain zip mangles the symlinks inside an .app bundle.
 ( cd "$DIST_DIR" && ditto -c -k --keepParent "$STAGE_NAME" "$PACKAGE.zip" )
 
+# Safari's "Add Temporary Extension..." wants a folder with manifest.json at its
+# root. Offering that folder *inside* the app package does not work in practice:
+# the file picker lands on the outer folder and Safari answers "Extensie niet
+# ondersteund". So it gets its own download, where the folder you unpack is
+# already the folder to select.
+echo "==> Assembling $LOOSE_NAME"
+LOOSE_STAGE="$DIST_DIR/$LOOSE_NAME"
+ditto "$ROOT/extension" "$LOOSE_STAGE"
+test -f "$LOOSE_STAGE/manifest.json"
+( cd "$DIST_DIR" && ditto -c -k --keepParent "$LOOSE_NAME" "$LOOSE_PACKAGE.zip" )
+
 echo
-echo "Done: $DIST_DIR/$PACKAGE.zip"
+echo "Done:"
+echo "  $DIST_DIR/$PACKAGE.zip"
+echo "  $DIST_DIR/$LOOSE_PACKAGE.zip"
 ls -la "$DIST_DIR"
