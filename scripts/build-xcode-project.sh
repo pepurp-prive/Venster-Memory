@@ -45,6 +45,36 @@ xcrun safari-web-extension-converter "$SOURCE" \
   --no-open \
   --force
 
+PROJECT="$(find "$OUTPUT" -maxdepth 3 -name 'project.pbxproj' -print -quit)"
+if [[ -z "$PROJECT" ]]; then
+  echo "The converter produced no project.pbxproj under $OUTPUT" >&2
+  exit 1
+fi
+
+# The converter derives the app's identifier and the extension's identifier by
+# different rules, which leaves the appex not prefixed by its parent app and
+# fails ValidateEmbeddedBinary. Pin both here instead of guessing its intent.
+python3 - "$PROJECT" "$BUNDLE_ID" <<'PYEOF'
+import pathlib, re, sys
+
+pbxproj, base = pathlib.Path(sys.argv[1]), sys.argv[2]
+source = pbxproj.read_text()
+seen = {}
+
+def rewrite(match):
+    current = match.group(1).strip().strip('"')
+    fixed = f"{base}.Extension" if current.endswith(".Extension") else base
+    seen[current] = fixed
+    return f"PRODUCT_BUNDLE_IDENTIFIER = {fixed};"
+
+patched, count = re.subn(r"PRODUCT_BUNDLE_IDENTIFIER = ([^;]+);", rewrite, source)
+pbxproj.write_text(patched)
+
+for was, now in sorted(seen.items()):
+    print(f"    {was}  ->  {now}")
+print(f"    ({count} occurrences across {len(seen)} identifiers)")
+PYEOF
+
 cat <<'NEXT'
 
 Done. From here:

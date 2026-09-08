@@ -29,7 +29,7 @@ PACKAGE="Venster-Memory-$VERSION"
 
 echo "==> Generating the Xcode project"
 rm -rf "$BUILD_DIR" "$DIST_DIR"
-"$ROOT/scripts/build-xcode-project.sh" "$BUILD_DIR" >/dev/null
+"$ROOT/scripts/build-xcode-project.sh" "$BUILD_DIR"
 
 PROJECT="$(find "$BUILD_DIR" -maxdepth 3 -name '*.xcodeproj' -print -quit)"
 if [[ -z "$PROJECT" ]]; then
@@ -65,9 +65,12 @@ if [[ -z "$APP" ]]; then
 fi
 echo "    built: $APP"
 
-echo "==> Signing ad-hoc (inner bundles first)"
-codesign --force --deep --sign - --timestamp=none "$APP"
+echo "==> Verifying the signature"
+# xcodebuild already signed app and appex ad-hoc ("Sign to Run Locally") with
+# the hardened runtime and the generated entitlements. Re-signing here would
+# throw those away, so only check the result.
 codesign --verify --deep --strict --verbose=2 "$APP"
+codesign --display --verbose=2 "$APP" 2>&1 | sed 's/^/    /' 
 
 echo "==> Assembling $PACKAGE"
 STAGE="$DIST_DIR/$PACKAGE"
